@@ -1,0 +1,158 @@
+{
+  "name": "AI Mentor Chatbot for Innomatics",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e91d97cb-8c66-487a-a400-f332f539831a",
+      "name": "Telegram Trigger",
+      "webhookId": "583038ed-7966-43be-921b-cfe797009511",
+      "credentials": {
+        "telegramApi": {
+          "id": "Db2cUpbbZ5n7sT7m",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=answer as you are doubt solving chat bot so first greet and ask to choose the topic among Python, EDA, Machine Learning, Deep Learning\ndoubt{{ $json.message.text }}\nand solve doubt accordin to topic\n\nreponce should be inside 100 words\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e113d470-c1d1-445d-987e-cf43f5195d73",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        176
+      ],
+      "id": "9f08c34d-9da1-45ee-9af0-02d0ee8ead14",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7C3eWRfgWv4pNnq3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        176
+      ],
+      "id": "bbbbe13c-a678-48a1-ad76-3af64c06c300",
+      "name": "Simple Memory",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "82808da1-5912-411a-b5dc-21d65941d1c0",
+      "name": "Send a text message",
+      "webhookId": "724ff6d6-02f8-4cc8-b48e-2c94f3b386b7",
+      "credentials": {
+        "telegramApi": {
+          "id": "Db2cUpbbZ5n7sT7m",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b527acd-5169-4a9a-8976-091542c86d42",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bedbf45ed96099766e9c75ee86201f9114a14080a5b21a7cdb8ce1cc1d6bd771"
+  },
+  "id": "eoatQ1NUEM6PkRlC",
+  "tags": []
+}
